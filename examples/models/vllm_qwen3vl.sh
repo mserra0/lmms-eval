@@ -1,4 +1,12 @@
 #!/bin/bash
+HF_CACHE="/data/users/mserrao/hf-cache"
+export CUDA_VISIBLE_DEVICES=7
+export HUGGIN
+export HF_HOME=$HF_CACHE
+export TRANSFORMERS_CACHE=$HF_CACHE
+export HF_DATASETS_CACHE=$HF_CACHE
+export HUGGINGFACE_HUB_CACHE=$HF_CACHE
+# export HF_HUB_OFFLINE=1
 
 # Qwen3-VL Evaluation Script with vLLM Backend
 # This script demonstrates how to evaluate Qwen3-VL models using vLLM for accelerated inference
@@ -23,20 +31,20 @@
 # - Qwen/Qwen3-VL-30B-A3B-Thinking
 # - Qwen/Qwen3-VL-235B-A22B-Instruct
 # - Qwen/Qwen3-VL-235B-A22B-Thinking
-MODEL="Qwen/Qwen3-VL-30B-A3B-Instruct"
+MODEL="Qwen/Qwen3-VL-2B-Instruct"
 
 # Parallelization Settings
 # Adjust based on your GPU configuration
-TENSOR_PARALLEL_SIZE=4  # Number of GPUs for tensor parallelism
+TENSOR_PARALLEL_SIZE=1 # Number of GPUs for tensor parallelism
 DATA_PARALLEL_SIZE=1     # Number of GPUs for data parallelism
 
 # Memory and Performance Settings
-GPU_MEMORY_UTILIZATION=0.85  # Fraction of GPU memory to use (0.0 - 1.0)
-BATCH_SIZE=64                # Batch size for evaluation
-
+GPU_MEMORY_UTILIZATION=0.90  # Fraction of GPU memory to use (0.0 - 1.0)
+BATCH_SIZE=16                # Batch size for evaluation
+MAX_MODEL_LEN=$((2**15))
 # Task Configuration
 # Common tasks: mmmu_val, mme, mathvista, ai2d, etc.
-TASKS="mmmu_val,mme"
+TASKS="manga_vqa_test"
 
 # Output Configuration
 OUTPUT_PATH="./logs/qwen3vl_vllm"
@@ -69,12 +77,14 @@ echo "Output Path: $OUTPUT_PATH"
 echo "=========================================="
 
 # Build the command
-CMD="uv run python -m lmms_eval \
+CMD="python -m lmms_eval \
     --model vllm \
-    --model_args model=${MODEL},tensor_parallel_size=${TENSOR_PARALLEL_SIZE},data_parallel_size=${DATA_PARALLEL_SIZE},gpu_memory_utilization=${GPU_MEMORY_UTILIZATION} \
+    --model_args model=${MODEL},tensor_parallel_size=${TENSOR_PARALLEL_SIZE},data_parallel_size=${DATA_PARALLEL_SIZE},gpu_memory_utilization=${GPU_MEMORY_UTILIZATION},max_model_len=${MAX_MODEL_LEN}\
     --tasks ${TASKS} \
     --batch_size ${BATCH_SIZE} \
-    --output_path ${OUTPUT_PATH}"
+    --output_path ${OUTPUT_PATH} \
+    --verbosity=DEBUG" 
+    
 
 # Add optional arguments
 if [ "$LOG_SAMPLES" = true ]; then
