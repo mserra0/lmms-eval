@@ -43,10 +43,8 @@ def mangavqa_test_process_results(doc, results):
     
     questionId = create_deterministic_id(doc)
     
-    # Process prediction
     pred = pred.strip()
 
-    # Get ground truths
     ground_truths = [doc["answer"]] if isinstance(doc["answer"], str) else doc["answer"]
 
     # Calculate ANLS
@@ -112,7 +110,6 @@ def mangavqa_test_process_results(doc, results):
     return results_dict
 
 def mangavqa_test_aggregate_results(results, args):
-    # save results as json
     path = generate_submission_file("manga_vqa_test_submission.json", args)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=4)
