@@ -1,6 +1,6 @@
 #!/bin/bash
 HF_CACHE="/data/users/mserrao/hf-cache"
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=1
 export HUGGIN
 export HF_HOME=$HF_CACHE
 export TRANSFORMERS_CACHE=$HF_CACHE
